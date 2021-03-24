@@ -30,13 +30,14 @@ ws.on('connection', function connection(wsConnection) {
          //console.log(result);
         if(result.length == 0)
             {
-                console.log(`[\x1b[31mWARN\x1b[37m] User not found, attempted from: ${wsConnection._socket.remoteAddress}`);
-                wsConnection.send(`User not found`);
+                console.log(`[\x1b[31mWARN\x1b[37m] Username or password is incorrect, attempted from: ${wsConnection._socket.remoteAddress}`);
+                wsConnection.send(`Username or password is incorrect`);
                 wsConnection.close();
             }
         else
         {
             console.log(`[\x1b[32mOK\x1b[37m] Login success, from: ${wsConnection._socket.remoteAddress}`)
+            wsConnection.send(`Login success`)
         }
         });
     });
