@@ -24,6 +24,7 @@ ws.on('connection', function connection(wsConnection) {
     let mqtt = mqttlib.connect('mqtt:koderman.net');
     let messObj = JSON.parse(message)
     
+    
     if(messObj.objType === `loginInfo`)
     {
         //console.log(user);
@@ -59,17 +60,18 @@ ws.on('connection', function connection(wsConnection) {
             console.log(`user id: ${userID}`);
             sql = mysql.format(sql,inserts);
             console.log(sql);
-            con.query(sql,function(err,result,fields){
+            con.query(sql,async function(err,result,fields){
                 if (err) {console.log(err); /*throw err*/};
                 console.log(result);
                 let data = {
                     type: "deviceList",
                     data: result,
                 }
-                wsConnection.send(JSON.stringify(data));
+                await wsConnection.send(JSON.stringify(data));
                     result.forEach(e => {
                         console.log(`subscribed to: ${e.mac}`);
                         mqtt.subscribe(e.mac);
+                        mac=e.mac;
                     });
                 });
         }
@@ -88,6 +90,8 @@ ws.on('connection', function connection(wsConnection) {
         //console.log("topic is "+ topic);
         try{
             message = JSON.parse(message);
+            message.mac = topic;
+            console.log(message);
             if(message.objType==="cts")
                 wsConnection.send(JSON.stringify(message));
         }catch{console.log("Wrong json format");}
